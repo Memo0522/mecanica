@@ -1,0 +1,153 @@
+/* Body and general styles */
+body {
+    background: linear-gradient(135deg, rgba(18, 117, 48, 0.1), rgba(119, 44, 48, 0.1)), #ffffff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-size: 400% 400%; /* Hace el degradado más grande */
+    animation: gradientAnimation 15s ease infinite; /* Agrega animación */
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+}
+
+/* Header and footer lines */
+.header-line, .footer-line {
+    height: 5px;
+    margin: 20px 0;
+}
+
+.header-line {
+    background-color: #127530; /* Green */
+}
+
+.footer-line {
+    background-color: #772c30; /* Red */
+}
+
+/* Login box */
+.login-box {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Input group */
+.input-group {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    border: 1px solid #127530; /* Green border */
+}
+
+.input-group img {
+    margin-right: 10px;
+}
+
+.input-field {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+}
+
+/* Show password and options */
+.options {
+    text-align: left;
+    margin: 10px 0;
+}
+
+.options label {
+    font-size: 12px;
+}
+
+/* Button */
+.login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #772c30; /* Red */
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background-color 0.3s;
+}
+
+.login-button:hover {
+    background-color: #994040; /* Slightly lighter red */
+}
+
+/* Links */
+.links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.links a {
+    color: #127530; /* Green */
+    text-decoration: none;
+    transition: color 0.3s;
+    text-align: center;
+}
+
+.links a:hover {
+    color: #0a4d20;
+}
+
+/* Footer */
+footer {
+    font-size: 10px;
+    color: #888888;
+    margin-top: 20px;
+}
+
+/* Estilos para la alerta */
+.alert {
+    display: none; /* Oculto por defecto */
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    color: #fff;
+}
+
+.alert-success {
+    background-color: #4CAF50; /* Verde */
+    border-color: #4CAF50;
+}
+
+.alert-error {
+    background-color: #f44336; /* Rojo */
+    border-color: #f44336;
+}
+
+.logo {
+    display: block; /* Asegura que la imagen sea un bloque para centrarla */
+    margin: 0 auto; /* Centra la imagen horizontalmente */
+    max-width: 150px; /* Reduce el tamaño máximo */
+    height: auto; /* Mantiene la proporción de la imagen */
+    margin-bottom: 15px; /* Espacio debajo de la imagen */
+}

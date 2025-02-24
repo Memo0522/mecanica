@@ -1,0 +1,73 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffff;
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilos del header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #772c30;
+    color: white;
+    padding: 20px;
+}
+
+h1 {
+    margin: 0;
+}
+
+.exit-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.exit-button img {
+    width: 40px;
+    height: 40px;
+}
+
+/* Contenedor de los botones */
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #127530;
+    color: white;
+    text-decoration: none;
+    margin: 15px;
+    padding: 10px;
+    width: 300px;
+    height: 210px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.button:hover {
+    background-color: #127530;
+    transform: scale(1.05);
+}
+
+.button img {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
+}
+
+.button span {
+    font-size: 20px;
+    text-align: center;
+}

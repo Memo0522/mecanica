@@ -15,7 +15,8 @@
                 <button type="submit">Subir Excel</button>
             </form>
 
-            <button>Agregar Nuevo Alumno</button>
+
+            <a href="{{route(name: 'alumnos.create')}}" class="icon-button1">Agregar Nuevo Alumno</a>
 
             <!-- Formulario de búsqueda de matrícula -->
             <form action="{{ route('alumnos.index') }}" method="GET" class="search-form">
@@ -48,13 +49,22 @@
                             <td>{{ $alumno->grado }}</td>
                             <td>{{ $alumno->grupo }}</td>
                             <td>
-                                <a href="#alumnos.edit" class="icon-button" title="Editar">
+                                <a href="{{route("alumnos.edit",["matricula"=>$alumno->matricula])}}" class="icon-button" title="Editar">
                                     <img src="{{ asset('img/icon-update.png') }}" alt="Editar">
                                 </a>
-                                <a href="#alumnos.destroy" 
-                                    class="icon-button" title="Eliminar">
+
+                                <a href="#" class="icon-button" onclick="confirmarEliminacion(event, '{{ $alumno->matricula }}')">
                                     <img src="{{ asset('img/icon-delete.png') }}" alt="Eliminar">
                                 </a>
+                            
+                                <form id="delete-form-{{ $alumno->matricula }}" 
+                                      action="{{ route('alumnos.destroy', ['matricula' => $alumno->matricula]) }}" 
+                                      method="post" 
+                                      style="display: none;">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+
                             </td>
                         </tr>
                     @empty
@@ -66,5 +76,14 @@
             </table>
         </div>
     </div>
-    
+    <script>
+        function confirmarEliminacion(event, matrícula) {
+            event.preventDefault(); // Evita que el enlace navegue a otra página
+        
+            if (confirm('¿Estás seguro de que deseas eliminar este registro?')) {
+                document.getElementById('delete-form-' + matrícula).submit();
+            }
+        }
+        
+            </script>
 @endsection

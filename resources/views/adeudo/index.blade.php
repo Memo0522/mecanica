@@ -9,7 +9,7 @@
         </header>
 
         <div class="actions">
-            <button>Agregar Nuevo Adeudo</button>
+            <a href="{{route('adeudos.create')}}" class=".icon-button1">Agregar Nuevo Adeudo</a>
 
             <!-- Barra de búsqueda -->
             <form action="{{ route('adeudos.index') }}" method="GET" class="search-form">

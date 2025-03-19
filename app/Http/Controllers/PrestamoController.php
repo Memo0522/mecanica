@@ -19,4 +19,5 @@ class PrestamoController extends Controller
 
         return view('prestamo.index', compact('prestamos')); 
     }
+    
 }

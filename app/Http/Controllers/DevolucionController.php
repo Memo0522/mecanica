@@ -22,5 +22,7 @@ class DevolucionController extends Controller
         return view('devoluciones.index', compact('prestamos', 'search'));
 
     }
+
+    
     //
 }

@@ -14,7 +14,7 @@
                 <input type="file" name="dataCliente" id="file-input" accept=".csv, .xlsx" required />
                 <button type="submit">Subir Excel</button>
             </form>
-            <button onclick="window.location.href='{{ url('inventario/agregaInven') }}'">Agregar Nuevo Registro</button>
+            <a href="{{route(name: 'inventario.create')}}" class="icon-button1">Agregar Nuevo Registro</a>
 
             <!-- Barra de búsqueda -->
             <form action="{{route('inventario.index')}}" method="GET" class="search-form">
@@ -52,13 +52,22 @@
                             <td>{{ $item->ubicacion }}</td>
                             <td>{{ $item->tipo_inventario }}</td>
                             <td>
-                                <a href="#" class="icon-button">
+                                <a href="{{route("inventario.edit",$item->codigo)}}" class="icon-button">
                                     <img src="{{ asset('img/icon-update.png') }}" alt="Editar">
                                 </a>
-                                <a href="#"
-                                   class="icon-button">
+
+                                <a href="#" class="icon-button" onclick="confirmarEliminacion(event, '{{ $item->codigo }}')">
                                     <img src="{{ asset('img/icon-delete.png') }}" alt="Eliminar">
                                 </a>
+                            
+                                <form id="delete-form-{{ $item->codigo }}" 
+                                      action="{{ route('inventario.destroy', ['codigo' => $item->codigo]) }}" 
+                                      method="post" 
+                                      style="display: none;">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+
                             </td>
                         </tr>
                     @empty
@@ -70,4 +79,14 @@
             </table>
         </div>
     </div>
+    <script>
+function confirmarEliminacion(event, codigo) {
+    event.preventDefault(); // Evita que el enlace navegue a otra página
+
+    if (confirm('¿Estás seguro de que deseas eliminar este registro?')) {
+        document.getElementById('delete-form-' + codigo).submit();
+    }
+}
+
+    </script>
 @endsection

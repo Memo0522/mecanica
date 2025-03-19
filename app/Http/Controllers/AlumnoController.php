@@ -21,4 +21,53 @@ class AlumnoController extends Controller
 
         return view('alumnos.index', compact('alumnos'));
     }
+
+    public function create(){
+
+        return view('alumnos.create');
+    }
+
+    public function store(Request $request){
+        //$request->validate([])
+
+        DB::table('alumnos')->insert([
+
+            "matricula"=>$request->matricula,
+            "nombre"=>$request->nombre,
+            "pe"=>$request->pe,
+            "grado"=>$request->grado, 
+            "grupo"=>$request->grupo,
+
+        ]);
+        return redirect()->route('alumnos.index');
+    }
+
+    public function edit($matricula){
+        $data = DB::table('alumnos')
+            ->where('matricula', '=', $matricula)       
+            ->first();
+        return view('alumnos.edit', compact('data'));
+    }
+
+    public function update(Request $request, $matricula){
+        DB::table('alumnos')
+            ->where('matricula', '=', $matricula)
+            ->update(
+                [
+                    "matricula"=>$request->matricula,
+                    "nombre"=>$request->nombre,
+                    "pe"=>$request->pe,
+                    "grado"=>$request->grado, 
+                    "grupo"=>$request->grupo,
+                ]
+            );
+        return redirect()->route('alumnos.index');
+    }
+    
+    public function destroy($matricula){
+        $data = DB::table('alumnos')
+            ->where('matricula', '=', $matricula)       
+            ->delete();
+        return redirect()->route('alumnos.index');
+    }
 }

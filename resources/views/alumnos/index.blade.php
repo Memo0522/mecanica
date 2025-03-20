@@ -6,10 +6,13 @@
                 <img src="{{ asset('img/volver-flecha.png') }}" alt="Salir">
             </a>
             <h1>Administración de Alumnos</h1>
+            @if(session('success'))
+    <div style="color: green;">{{ session('error') }}</div>
+@endif
         </header>
 
         <div class="actions">
-            <form action="#cargar-alumnos-exel" method="POST" enctype="multipart/form-data">
+            <form action="{{route('alumnos.importar')}}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="dataCliente" id="file-input" accept=".csv, .xlsx" required />
                 <button type="submit">Subir Excel</button>

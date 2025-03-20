@@ -34,6 +34,7 @@ Route::prefix('inventario')->controller(InventarioController::class)->group(func
     Route::post('/store','store')->name('inventario.store');
     Route::put('/{codigo}','update')->name('inventario.update');
     Route::delete('/{codigo}','destroy')->name('inventario.destroy');
+    Route::post('/inventario/importar', 'import')->name('inventario.import');
     Route::get('/{inventario}/edit',action: 'edit')->name('inventario.edit');
 });
 
@@ -57,6 +58,7 @@ Route::prefix('alumnos')->controller(AlumnoController::class)->group(function(){
     Route::get('/','index')->name('alumnos.index');
     Route::get('/create','create')->name('alumnos.create');
     Route::post('/store','store')->name('alumnos.store');
+    Route::post('/importarAlumnos','importarAlumnos')->name('alumnos.importar');
     Route::put('/{matricula}','update')->name('alumnos.update');
     Route::delete('/{matricula}','destroy')->name('alumnos.destroy');
     Route::get('/{matricula}/edit',action: 'edit')->name('alumnos.edit');

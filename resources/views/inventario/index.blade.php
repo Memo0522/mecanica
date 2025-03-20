@@ -9,7 +9,7 @@
         </header>
 
         <div class="actions">
-            <form action="" method="POST" enctype="multipart/form-data">
+            <form action="{{route('inventario.import')}}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="dataCliente" id="file-input" accept=".csv, .xlsx" required />
                 <button type="submit">Subir Excel</button>

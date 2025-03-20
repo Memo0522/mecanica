@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class InventarioController extends Controller
 {
@@ -72,5 +73,54 @@ class InventarioController extends Controller
             ->where('codigo', '=', $codigo)       
             ->delete();
         return redirect()->route('inventario.index');
+    }
+
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'dataCliente' => 'required|mimes:xlsx,csv'
+        ]);
+
+        $file = $request->file('dataCliente');
+
+        try {
+            $spreadsheet = IOFactory::load($file->getRealPath());
+            $rows = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+
+            foreach ($rows as $index => $row) {
+                if ($index == 1) continue; // Saltar encabezado
+
+                $codigo = $row['A'];
+                $descripcion = $row['B'];
+                $cantidad = $row['C'];
+                $categoria = $row['D'];
+                $medidas = $row['E'];
+                $ubicacion = $row['F'];
+                $tipo_inventario = $row['G'];
+
+                $existe = DB::table('inventario')->where('codigo', $codigo)->exists();
+
+                if ($existe) {
+                    DB::table('inventario')
+                        ->where('codigo', $codigo)
+                        ->update(['cantidad' => $cantidad]);
+                } else {
+                    DB::table('inventario')->insert([
+                        'codigo' => $codigo,
+                        'descripcion' => $descripcion,
+                        'cantidad' => $cantidad,
+                        'categoria' => $categoria,
+                        'medidas' => $medidas,
+                        'ubicacion' => $ubicacion,
+                        'tipo_inventario' => $tipo_inventario,
+                    ]);
+                }
+            }
+
+            return redirect()->route('inventario.index')->with('success', 'Datos importados correctamente.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al procesar el archivo: ' . $e->getMessage());
+        }
     }
 }

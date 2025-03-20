@@ -7,9 +7,9 @@
             </a>
             <h1>Adeudos</h1>
         </header>
-
         <div class="actions">
-            <a href="{{route('adeudos.create')}}" class=".icon-button1">Agregar Nuevo Adeudo</a>
+            <a href="{{ route('adeudos.create') }}" class="icon-button1">Agregar Nuevo Adeudo</a>
+
 
             <!-- Barra de búsqueda -->
             <form action="{{ route('adeudos.index') }}" method="GET" class="search-form">
@@ -42,8 +42,9 @@
                                 <button onclick="mostrarDetalles({{ $adeudo->id_adeudos }})">Ver Detalles</button>
                             </td>
                             <td>
-                                <form action="#adeudos.update" method="POST">
+                                <form action="{{ route('adeudos.update', $adeudo->id_adeudos) }}" method="POST">
                                     @csrf
+                                    @method('PUT')
                                     <input type="hidden" name="id_adeudos" value="{{ $adeudo->id_adeudos }}">
 
                                     <select name="estatus" {{ $adeudo->estatus === 'PAGADO' ? 'disabled' : '' }}>
@@ -56,13 +57,18 @@
                                     <button type="submit"
                                         {{ $adeudo->estatus === 'PAGADO' ? 'disabled' : '' }}>Actualizar</button>
                                 </form>
+
                             </td>
                             <td>
-                                <a href="#adeudos.drestroy"
-                                    title="Eliminar este registro"
-                                    class="icon-button">
-                                    <img src="{{ asset('img/icon-delete.png') }}" alt="Eliminar">
-                                </a>
+                                <form action="{{ route('adeudos.destroy', ['id'=>$adeudo->id_adeudos]) }}" method="POST"
+                                    class="delete-form" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" title="Eliminar este registro" class="icon-button eliminar-btn">
+                                        <img src="{{ asset('img/icon-delete.png') }}" alt="Eliminar">
+                                    </button>
+                                </form>
+
                             </td>
                         </tr>
                     @endforeach
@@ -76,4 +82,36 @@
         <button class="close-popup" onclick="cerrarPopup()">Cerrar</button>
         <div id="popup-content"></div>
     </div>
+
+    <script>
+        function mostrarDetalles(id) {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('popup').style.display = 'block';
+
+            fetch(`/adeudos/detalles/${id}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('popup-content').innerHTML = data;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function cerrarPopup() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('popup').style.display = 'none';
+        }
+    </script>
+
+    <script>
+        document.querySelectorAll('.delete-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (confirm('¿Estás seguro de que deseas eliminar este adeudo?')) {
+                    this.submit();
+                }
+            });
+        });
+    </script>
 @endsection

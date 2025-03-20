@@ -44,7 +44,11 @@ Route::prefix('prestamos')->controller(PrestamoController::class)->group(functio
 Route::prefix('adeudos')->controller(AdeudoController::class)->group(function(){
     Route::get('/','index')->name('adeudos.index');
     Route::get('/create','create')->name('adeudos.create');
+    Route::delete('/{id}','destroy')->name('adeudos.destroy');
     Route::post('/store','store')->name('adeudos.store');
+    Route::get('/detalles/{id}','detalles');
+    Route::put('/update/{id}','update')->name('adeudos.update');
+
 });
 
 Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');

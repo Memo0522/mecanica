@@ -23,7 +23,8 @@ class AdeudoController extends Controller
         return view('adeudo.index', compact('adeudos', 'search'));
     }
 
-    public function create() {
+    public function create()
+    {
         return view('adeudo.create');
     }
     public function store(Request $request)
@@ -71,11 +72,70 @@ class AdeudoController extends Controller
 
             DB::commit();
 
-            return redirect()->route('adeudos.index')->with('success', 'Adeudo agregado exitosamente.')
-;
+            return redirect()->route('adeudos.index')->with('success', 'Adeudo agregado exitosamente.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Hubo un error al guardar el adeudo: ' . $e->getMessage());
         }
+    }
+
+    public function detalles($id)
+    {
+        $detalles = DB::table('detalle_adeudo')
+            ->where('id_adeudos', $id)
+            ->get();
+
+        if ($detalles->isEmpty()) {
+            return "<p>No se encontraron detalles para este adeudo.</p>";
+        }
+
+        $html = "<h3>Detalles del Adeudo</h3>";
+        $html .= "<table border='1' cellpadding='10' cellspacing='0'>";
+        $html .= "<thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cuatrimestre</th>
+                    <th>Grupo</th>
+                    <th>PE</th>
+                    <th>Descripción</th>
+                    <th>Cantidad</th>
+                    <th>Monto</th>
+                </tr>
+              </thead>";
+        $html .= "<tbody>";
+
+        foreach ($detalles as $row) {
+            $html .= "<tr>";
+            $html .= "<td>" . e($row->nombre) . "</td>";
+            $html .= "<td>" . e($row->grado) . "</td>";
+            $html .= "<td>" . e($row->grupo) . "</td>";
+            $html .= "<td>" . e($row->pe) . "</td>";
+            $html .= "<td>" . e($row->descripcion) . "</td>";
+            $html .= "<td>" . e($row->cantidad) . "</td>";
+            $html .= "<td>$" . number_format($row->monto, 2) . "</td>";
+            $html .= "</tr>";
+        }
+
+        $html .= "</tbody></table>";
+
+        return $html;
+    }
+
+    public function update(Request $request, $id)
+    {
+        $estatus = $request->input('estatus');
+
+        DB::table('adeudos')
+            ->where('id_adeudos', $id)
+            ->update(['estatus' => $estatus]);
+
+        return redirect()->route('adeudos.index');
+    }
+
+    public function destroy($id)
+    {
+        DB::table('adeudos')->where('id_adeudos', "=", $id)->delete();
+        DB::table('detalle_adeudo')->where('id_adeudos', "=", $id)->delete();
+        return redirect()->route('adeudos.index')->with('success', 'Adeudo eliminado correctamente.');
     }
 }

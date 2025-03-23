@@ -20,4 +20,13 @@ class PrestamoController extends Controller
         return view('prestamo.index', compact('prestamos')); 
     }
     
+    public function create()
+    {
+        return view('prestamo.create');
+    }
+
+    public function store(Request $request)
+    {
+
+    }
 }

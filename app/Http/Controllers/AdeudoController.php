@@ -134,8 +134,9 @@ class AdeudoController extends Controller
 
     public function destroy($id)
     {
-        DB::table('adeudos')->where('id_adeudos', "=", $id)->delete();
         DB::table('detalle_adeudo')->where('id_adeudos', "=", $id)->delete();
+        DB::table('adeudos')->where('id_adeudos', "=", $id)->delete();
+
         return redirect()->route('adeudos.index')->with('success', 'Adeudo eliminado correctamente.');
     }
 }

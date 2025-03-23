@@ -40,6 +40,8 @@ Route::prefix('inventario')->controller(InventarioController::class)->group(func
 
 Route::prefix('prestamos')->controller(PrestamoController::class)->group(function(){
     Route::get('/','index')->name('prestamos.index');
+    Route::get('/create','create')->name('prestamos.create');
+    Route::get('/store','store')->name('prestamos.store');
 });
 
 Route::prefix('adeudos')->controller(AdeudoController::class)->group(function(){

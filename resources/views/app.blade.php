@@ -12,7 +12,7 @@
     @if (request()->routeIs('inventario.index') || request()->routeIs('inventario.create') || request()->routeIs('inventario.edit'))
         <link rel="stylesheet" href="{{asset('css/inventario.css')}}">
     @endif
-    @if (request()->routeIs('prestamos.index'))
+    @if (request()->routeIs('prestamos.index') || request()->routeIs('prestamos.create'))
         <link rel="stylesheet" href="{{asset('css/prestamos.css')}}">
     @endif
     @if (request()->routeIs('adeudos.index') || request()->routeIs('adeudos.create'))

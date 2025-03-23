@@ -69,8 +69,7 @@
                         <td>1</td>
                         <td><input type="text" name="codigo[]" class="codigo-input" readonly required></td>
                         <td>
-                            <input type="text" name="descripcion[]" class="descripcion-input" required
-                                autocomplete="off">
+                            <input type="text" name="descripcion[]" class="descripcion-input" required autocomplete="off">
                             <div class="autocomplete-list" style="display:none;"></div>
                         </td>
                         <td><input type="number" name="cantidad[]" min="1" required></td>

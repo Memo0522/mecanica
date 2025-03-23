@@ -66,6 +66,20 @@ button:hover, .icon-button:hover {
     background-color: #8b1a1a;
 }
 
+.icon-button1 {
+    display: inline-block; /* Para que se comporte como un botón */
+    background-color: #772c30; /* Color rojo oscuro */
+    color: white;
+    text-decoration: none; /* Eliminar subrayado */
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.icon-button1:hover {
+    background-color: #5a1f23; /* Oscurecer el color al pasar el mouse */
+}
+
 /* Tabla */
 .table-container {
     overflow-x: auto;

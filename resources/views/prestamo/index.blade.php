@@ -9,7 +9,7 @@
         </header>
 
         <div class="actions">
-            <a href="#prestamos.create" class="btn btn-primary">Agregar Nuevo Préstamo</a>
+            <a href="{{route('prestamos.create')}}" class="icon-button1">Agregar Nuevo Préstamo</a>
 
             <form action="{{ route('prestamos.index') }}" method="GET" class="search-form">
                 <input type="text" name="search" placeholder="Buscar por No. o matrícula"

@@ -9,7 +9,7 @@
         </header>
 
         <div class="actions">
-            <a href="{{route('prestamos.create')}}" class="icon-button1">Agregar Nuevo Préstamo</a>
+            <a href="{{ route('prestamos.create') }}" class="icon-button1">Agregar Nuevo Préstamo</a>
 
             <form action="{{ route('prestamos.index') }}" method="GET" class="search-form">
                 <input type="text" name="search" placeholder="Buscar por No. o matrícula"
@@ -43,10 +43,19 @@
                                 </td>
                                 <td>{{ $prestamo->status }}</td>
                                 <td>
-                                    <a href="#prestamos.drestroy"
-                                        class='icon-button' title='Eliminar este registro'>
-                                        <img src="{{ asset('img/icon-delete.png') }}" alt="Eliminar">
-                                    </a>
+                                    @if ($prestamo->status !== 'sin entregar')
+                                        <form action="{{ route('prestamos.destroy', $prestamo->id_prestamos) }}" method="POST" style="display: inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="icon-button" title="Eliminar este registro">
+                                                <img src="{{ asset('img/icon-delete.png') }}" alt="Eliminar">
+                                            </button>
+                                        </form>
+                                    @else
+                                        <button class="icon-button" disabled title="No se puede eliminar (sin entregar)">
+                                            <img src="{{ asset('img/icon-delete.png') }}" alt="Eliminar">
+                                        </button>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -59,5 +68,4 @@
             </table>
         </div>
     </div>
-
 @endsection

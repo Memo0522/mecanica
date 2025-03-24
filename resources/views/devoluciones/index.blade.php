@@ -8,6 +8,19 @@
             <h1>Devoluciones</h1>
         </header>
 
+        <!-- Script para mostrar alertas de éxito o error -->
+        @if(session('success'))
+            <script>
+                alert("{{ session('success') }}");
+            </script>
+        @endif
+
+        @if(session('error'))
+            <script>
+                alert("{{ session('error') }}");
+            </script>
+        @endif
+
         <div class="actions">
             <!-- Barra de búsqueda -->
             <form action="{{ route('devoluciones.index') }}" method="GET" class="search-form">
@@ -42,7 +55,8 @@
                                 </td>
                                 <td>{{ $prestamo->status }}</td>
                                 <td>
-                                    <form action="#prestamosStatus" method="POST">
+                                    <!-- Formulario para actualizar el estado -->
+                                    <form action="{{ route('devoluciones.update-status') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="id_prestamos" value="{{ $prestamo->id_prestamos }}">
 

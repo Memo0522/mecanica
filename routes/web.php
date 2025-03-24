@@ -41,7 +41,8 @@ Route::prefix('inventario')->controller(InventarioController::class)->group(func
 Route::prefix('prestamos')->controller(PrestamoController::class)->group(function(){
     Route::get('/','index')->name('prestamos.index');
     Route::get('/create','create')->name('prestamos.create');
-    Route::get('/store','store')->name('prestamos.store');
+    Route::post('/store','store')->name('prestamos.store');
+    Route::delete('/prestamos/{id}','destroy')->name('prestamos.destroy');
 });
 
 Route::prefix('adeudos')->controller(AdeudoController::class)->group(function(){
@@ -54,7 +55,10 @@ Route::prefix('adeudos')->controller(AdeudoController::class)->group(function(){
 
 });
 
-Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
+Route::prefix('reporte')->controller(ReporteController::class)->group(function(){
+    Route::get('/',  'index')->name('reportes.index');
+    Route::post('/generar-reporte', 'generarReporte')->name('generar.reporte');
+});
 
 Route::prefix('alumnos')->controller(AlumnoController::class)->group(function(){
     Route::get('/','index')->name('alumnos.index');
@@ -66,4 +70,7 @@ Route::prefix('alumnos')->controller(AlumnoController::class)->group(function(){
     Route::get('/{matricula}/edit',action: 'edit')->name('alumnos.edit');
 });
 
-Route::get('/devoluciones', [DevolucionController::class, 'index'])->name('devoluciones.index');
+Route::prefix('devoluciones')->controller(DevolucionController::class)->group(function(){
+    Route::get('/', 'index')->name('devoluciones.index');
+    Route::post('/update-status', 'updateStatus')->name('devoluciones.update-status');
+});

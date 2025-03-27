@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Dompdf\Dompdf;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -12,9 +13,7 @@ class ReporteController extends Controller
 {
     public function index()
     {
-        // Obtener todos los reportes de la base de datos
         $reportes = DB::table('reportes')->orderBy('fecha', 'DESC')->get();
-
         return view('reporte.index', compact('reportes'));
     }
 
@@ -39,29 +38,52 @@ class ReporteController extends Controller
                 $resultados = $this->obtenerAdeudos($fechaInicio, $fechaFinal);
 
                 if (empty($resultados)) {
-                    return redirect()->back()->with('error', 'No hay datos para generar el reporte de adeudos.');
+                    return redirect()->route('reportes.index')->with('error', 'No hay datos para generar el reporte de adeudos.');
                 }
 
                 if ($formato === 'pdf') {
                     return $this->generarReportePDF($fechaInicio, $fechaFinal, $resultados, 'adeudos');
-                } elseif ($formato === 'excel') {
+                } else {
                     return $this->generarReporteExcel($resultados, 'adeudos');
                 }
             } else {
                 $resultados = $this->obtenerInventario($fechaInicio, $fechaFinal, $opcionInventario);
 
                 if (empty($resultados)) {
-                    return redirect()->back()->with('error', 'No hay datos para generar el reporte de inventario.');
+                    return redirect()->route('reportes.index')->with('error', 'No hay datos para generar el reporte de inventario.');
                 }
 
                 if ($formato === 'pdf') {
                     return $this->generarReportePDF($fechaInicio, $fechaFinal, $resultados, 'inventario');
-                } elseif ($formato === 'excel') {
+                } else {
                     return $this->generarReporteExcel($resultados, 'inventario');
                 }
             }
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error en el servidor: ' . $e->getMessage());
+            return redirect()->route('reportes.index')->with('error', 'Error en el servidor: ' . $e->getMessage());
+        }
+    }
+
+    public function verReporte($archivo)
+    {
+        $extension = pathinfo($archivo, PATHINFO_EXTENSION);
+        $rutaBase = $extension === 'pdf' ? 'pdf/' : 'excel/';
+        $rutaCompleta = storage_path('app/public/' . $rutaBase . $archivo);
+
+        if (!file_exists($rutaCompleta)) {
+            abort(404);
+        }
+
+        if ($extension === 'pdf') {
+            return response()->file($rutaCompleta, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="'.$archivo.'"'
+            ]);
+        } else {
+            return response()->file($rutaCompleta, [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition' => 'inline; filename="'.$archivo.'"'
+            ]);
         }
     }
 
@@ -75,10 +97,15 @@ class ReporteController extends Controller
                 adeudos.matricula,
                 adeudos.fecha,
                 adeudos.monto AS monto_adeudo,
-                detalle_adeudo.nombre,
+                MAX(detalle_adeudo.nombre) AS nombre,
                 GROUP_CONCAT(CONCAT(detalle_adeudo.descripcion, " $", detalle_adeudo.monto) SEPARATOR "\n") AS detalle
             ')
-            ->groupBy('adeudos.id_adeudos')
+            ->groupBy(
+                'adeudos.id_adeudos',
+                'adeudos.matricula',
+                'adeudos.fecha',
+                'adeudos.monto'
+            )
             ->get()
             ->toArray();
     }
@@ -97,44 +124,36 @@ class ReporteController extends Controller
 
     private function generarReportePDF($fechaInicio, $fechaFinal, $datos, $tipo)
     {
-        // Crear la carpeta si no existe
-        $pdfFolder = storage_path('app/public/pdf');
-        if (!file_exists($pdfFolder)) {
-            mkdir($pdfFolder, 0777, true);
-        }
-
         $dompdf = new Dompdf();
         $html = view('reporte.pdf', compact('fechaInicio', 'fechaFinal', 'datos', 'tipo'))->render();
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
-        $pdfFileName = 'reporte_' . $tipo . '_' . now()->format('Y-m-d_H-i-s') . '.pdf';
-        $pdfPath = storage_path('app/public/pdf/' . $pdfFileName);
-        file_put_contents($pdfPath, $dompdf->output());
+        $nombreArchivo = 'reporte_' . $tipo . '_' . now()->format('Y-m-d_His') . '.pdf';
+        $rutaRelativa = 'pdf/' . $nombreArchivo;
+        $rutaCompleta = storage_path('app/public/' . $rutaRelativa);
+        
+        if (!file_exists(dirname($rutaCompleta))) {
+            mkdir(dirname($rutaCompleta), 0755, true);
+        }
 
-        // Guardar en la base de datos
+        file_put_contents($rutaCompleta, $dompdf->output());
+
         DB::table('reportes')->insert([
             'fecha' => now()->format('Y-m-d'),
-            'archivo' => $pdfFileName
+            'archivo' => $nombreArchivo
         ]);
 
-        return response()->download($pdfPath)->deleteFileAfterSend(true);
+        return response()->download($rutaCompleta)->deleteFileAfterSend(false);
     }
 
     private function generarReporteExcel($datos, $tipo)
     {
-        // Crear la carpeta si no existe
-        $excelFolder = storage_path('app/public/excel');
-        if (!file_exists($excelFolder)) {
-            mkdir($excelFolder, 0777, true);
-        }
-
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Reporte de ' . ucfirst($tipo));
 
-        // Configurar encabezados y datos según el tipo de reporte
         if ($tipo === 'adeudos') {
             $sheet->fromArray([
                 ['Matrícula', 'Nombre', 'Detalles', 'Fecha', 'Monto Adeudo'],
@@ -171,18 +190,22 @@ class ReporteController extends Controller
             }
         }
 
-        // Guardar el archivo Excel
-        $writer = new Xlsx($spreadsheet);
-        $excelFileName = 'reporte_' . $tipo . '_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
-        $excelPath = storage_path('app/public/excel/' . $excelFileName);
-        $writer->save($excelPath);
+        $nombreArchivo = 'reporte_' . $tipo . '_' . now()->format('Y-m-d_His') . '.xlsx';
+        $rutaRelativa = 'excel/' . $nombreArchivo;
+        $rutaCompleta = storage_path('app/public/' . $rutaRelativa);
+        
+        if (!file_exists(dirname($rutaCompleta))) {
+            mkdir(dirname($rutaCompleta), 0755, true);
+        }
 
-        // Guardar en la base de datos
-        DB::table('reportes')->insert(values: [
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($rutaCompleta);
+
+        DB::table('reportes')->insert([
             'fecha' => now()->format('Y-m-d'),
-            'archivo' => $excelFileName,
+            'archivo' => $nombreArchivo
         ]);
 
-        return response()->download($excelPath)->deleteFileAfterSend(true);
+        return response()->download($rutaCompleta)->deleteFileAfterSend(false);
     }
 }

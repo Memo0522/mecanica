@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
-
 <body>
     <div class="container">
         <header class="header">
@@ -20,8 +18,6 @@
             <h1>Generar Reportes</h1>
         </header>
 
-        
-        <!-- Mostrar mensajes de sesión -->
         @if(session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -39,7 +35,6 @@
             <button id="btnReporteAdeudos">Reporte Adeudos</button>
         </div>
 
-        <!-- Popup para el formulario de reportes -->
         <div id="formPopup" class="popup">
             <div class="popup-content">
                 <h2>Generar Reporte</h2>
@@ -55,7 +50,7 @@
                     </div>
                     <div class="form-group" id="inventarioOptions" style="display: none;">
                         <label for="opcionInventario">Tipo de Inventario:</label>
-                        <select id="opcionInventario" name="opcion_inventario" required>
+                        <select id="opcionInventario" name="opcion_inventario">
                             <option value="" disabled selected>Seleccione una opción</option>
                             <option value="Utvm">UTVM</option>
                             <option value="General">General</option>
@@ -63,14 +58,13 @@
                         </select>
                     </div>
                     <input type="hidden" id="reporteTipo" name="reporte_tipo" value="">
-                    <input type="hidden" id="formato" name="formato" value=""> <!-- Campo oculto para el formato -->
+                    <input type="hidden" id="formato" name="formato" value="">
                     <button type="submit" id="generarReporte">Generar Reporte</button>
                 </form>
                 <button class="close-btn" id="closeFormPopup">Cerrar</button>
             </div>
         </div>
 
-        <!-- Popup para seleccionar el formato -->
         <div id="popupFormat" class="popup2" style="display: none;">
             <div class="popup-content2">
                 <h2>Selecciona el formato del reporte</h2>
@@ -80,7 +74,6 @@
             </div>
         </div>
 
-        <!-- Tabla de reportes generados -->
         <div class="table-container">
             <table>
                 <thead>
@@ -98,11 +91,7 @@
                         <tr>
                             <td>{{ $reporte->fecha }}</td>
                             <td>
-                                @if($extension === 'pdf')
-                                    <a href="{{ asset('storage/pdf/' . $archivo) }}" target="_blank">{{ $archivo }}</a>
-                                @elseif($extension === 'xlsx')
-                                    <a href="{{ asset('storage/excel/' . $archivo) }}" target="_blank">{{ $archivo }}</a>
-                                @endif
+                                <a href="{{ route('reportes.ver', ['archivo' => $archivo]) }}" target="_blank">{{ $archivo }}</a>
                             </td>
                         </tr>
                     @endforeach
@@ -114,7 +103,6 @@
         </div>
     </div>
 
-    <!-- Script para manejar la lógica de los popups -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const btnReporteInventario = document.getElementById('btnReporteInventario');
@@ -125,9 +113,8 @@
             const reportForm = document.getElementById('reportForm');
             const reporteTipo = document.getElementById('reporteTipo');
             const inventarioOptions = document.getElementById('inventarioOptions');
-            const formatoInput = document.getElementById('formato'); // Campo oculto para el formato
+            const formatoInput = document.getElementById('formato');
 
-            // Mostrar el popup de formulario al hacer clic en los botones
             btnReporteInventario.addEventListener('click', function () {
                 reporteTipo.value = 'inventario';
                 inventarioOptions.style.display = 'block';
@@ -140,36 +127,30 @@
                 formPopup.style.display = 'block';
             });
 
-            // Cerrar el popup de formulario
             closeFormPopup.addEventListener('click', function () {
                 formPopup.style.display = 'none';
             });
 
-            // Manejar el envío del formulario
             reportForm.addEventListener('submit', function (e) {
-                e.preventDefault(); // Evitar el envío automático del formulario
+                e.preventDefault();
                 formPopup.style.display = 'none';
-                popupFormat.style.display = 'block'; // Mostrar el popup de selección de formato
+                popupFormat.style.display = 'block';
             });
 
-            // Manejar la selección de formato (Excel)
             document.getElementById('popupExcel').addEventListener('click', function () {
-                formatoInput.value = 'excel'; // Establecer el valor del formato
-                reportForm.submit(); // Enviar el formulario
+                formatoInput.value = 'excel';
+                reportForm.submit();
             });
 
-            // Manejar la selección de formato (PDF)
             document.getElementById('popupPDF').addEventListener('click', function () {
-                formatoInput.value = 'pdf'; // Establecer el valor del formato
-                reportForm.submit(); // Enviar el formulario
+                formatoInput.value = 'pdf';
+                reportForm.submit();
             });
 
-            // Cancelar la selección de formato
             document.getElementById('popupCancel').addEventListener('click', function () {
-                popupFormat.style.display = 'none'; // Ocultar el popup de selección de formato
+                popupFormat.style.display = 'none';
             });
         });
     </script>
 </body>
-
 </html>

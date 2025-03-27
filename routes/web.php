@@ -56,8 +56,9 @@ Route::prefix('adeudos')->controller(AdeudoController::class)->group(function(){
 });
 
 Route::prefix('reporte')->controller(ReporteController::class)->group(function(){
-    Route::get('/',  'index')->name('reportes.index');
+    Route::get('/', 'index')->name('reportes.index');
     Route::post('/generar-reporte', 'generarReporte')->name('generar.reporte');
+    Route::get('/ver/{archivo}', 'verReporte')->name('reportes.ver');
 });
 
 Route::prefix('alumnos')->controller(AlumnoController::class)->group(function(){

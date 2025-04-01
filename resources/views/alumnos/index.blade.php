@@ -9,7 +9,15 @@
             @if(session('success'))
     <div style="color: green;">{{ session('error') }}</div>
 @endif
+
         </header>
+
+        <!-- Script para mostrar alertas de éxito o error -->
+        @if(session('message'))
+        <script>
+            alert("{{ session('message') }}");
+        </script>
+    @endif
 
         <div class="actions">
             <form action="{{route('alumnos.importar')}}" method="POST" enctype="multipart/form-data">

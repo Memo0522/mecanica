@@ -8,6 +8,13 @@
             <h1>Préstamos</h1>
         </header>
 
+         <!-- Script para mostrar alertas de éxito o error -->
+         @if(session('message'))
+         <script>
+             alert("{{ session('message') }}");
+         </script>
+     @endif
+
         <div class="actions">
             <a href="{{ route('prestamos.create') }}" class="icon-button1">Agregar Nuevo Préstamo</a>
 

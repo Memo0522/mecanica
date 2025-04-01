@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -72,10 +73,22 @@ class AlumnoController extends Controller
 
     public function destroy($matricula)
     {
-        $data = DB::table('alumnos')
-            ->where('matricula', '=', $matricula)
+
+        // Verificar si el alumno tiene préstamos
+        $tienePrestamos = DB::table('prestamos')
+            ->where('matricula', $matricula)
+            ->exists(); // Devuelve true si hay registros, false si no hay
+
+        if ($tienePrestamos) {
+            return redirect()->route('alumnos.index')->with('message', 'No se puede eliminar el alumno porque tiene préstamos activos.');
+        }
+
+        // Si no tiene préstamos, eliminar el alumno
+        DB::table('alumnos')
+            ->where('matricula', $matricula)
             ->delete();
-        return redirect()->route('alumnos.index');
+
+        return redirect()->route('alumnos.index')->with('message', 'Alumno eliminado correctamente.');
     }
 
 
@@ -84,21 +97,21 @@ class AlumnoController extends Controller
         if ($request->hasFile('dataCliente')) {
             $file = $request->file('dataCliente');
             $extension = strtolower($file->getClientOriginalExtension());
-    
+
             if (in_array($extension, ['xlsx', 'csv'])) {
                 try {
                     $spreadsheet = IOFactory::load($file->getRealPath());
                     $hoja = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
-    
+
                     foreach ($hoja as $index => $row) {
                         if ($index === 1) continue; // Saltar encabezado
-    
+
                         // Validar que no estén vacíos
                         if (empty($row['A'])) continue;
-    
+
                         // Verificar si ya existe
                         $existe = DB::table('alumnos')->where('matricula', $row['A'])->first();
-    
+
                         if ($existe) {
                             // Actualizar si ya existe
                             DB::table('alumnos')->where('matricula', $row['A'])->update([
@@ -118,7 +131,7 @@ class AlumnoController extends Controller
                             ]);
                         }
                     }
-    
+
                     return redirect()->back()->with('success', 'Los alumnos se importaron correctamente.');
                 } catch (\Exception $e) {
                     return redirect()->back()->with('error', 'Error al procesar el archivo: ' . $e->getMessage());

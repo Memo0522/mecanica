@@ -89,10 +89,10 @@ class PrestamoController extends Controller
             // Generar el PDF
             $this->generarPDF($matricula, $fecha, $codigo, $cantidad, $descripcion, $pdf_nombre, $nombre, $pe, $grado, $grupo);
 
-            return redirect()->back()->with('success', 'Préstamo registrado correctamente. El PDF se generó en /pdf/' . $pdf_nombre);
+            return redirect()->route('prestamos.index')->with('message', 'Préstamo registrado correctamente. El PDF se generó en /pdf/' . $pdf_nombre);
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', $e->getMessage());
+            return redirect()->route('prestamos.index')->with('message', $e->getMessage());
         }
     }
 
